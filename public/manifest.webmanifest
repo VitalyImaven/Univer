@@ -1,0 +1,13 @@
+{
+  "id": "./",
+  "name": "מתמטיקה בכיף · כיתה ג׳",
+  "short_name": "מתמטיקה בכיף",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fdfaf3",
+  "theme_color": "#fdfaf3",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [{"src":"./icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
