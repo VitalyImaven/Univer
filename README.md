@@ -1,77 +1,100 @@
 # מתמטיקה בכיף · כיתה ג׳
 
-A tablet-friendly, Hebrew-first (RTL) mathematics learning PWA for Israeli grade 3.
+A tablet-friendly, Hebrew-first (RTL) mathematics learning PWA for Israeli grade 3: lessons, unlimited practice,
+a daily challenge, medals and a parent report. Everything runs in the browser — no account, no server, no ads.
 
-**Project status:** working source code prepared; curriculum/data generation validated programmatically. **A full browser build and touchscreen acceptance test are still required** on a machine with npm network access. This is an original educational project, not an official Ministry of Education app or a reproduction of a textbook.
+This is an original educational project. It is **not** an official Ministry of Education app and does not reproduce any textbook.
 
-## What's included
+## What's inside
 
-- 15 course units / **78 Hebrew lessons**, in a recommended school-year order inspired by Grade 3 *Maslulim Hadashim* books 9–12 with cross-year topics.
-- For each lesson: goal, 3-step explanation, worked example, visual or mathematical exercises, targeted hint and detailed answer explanation.
-- 3 difficulty levels: `קל`, `רגיל`, `אתגר`.
-- **14,040 pre-generated Hebrew tasks** (60 tasks per difficulty, per lesson); 10,029 unique items, including some deliberate/inevitable repetitions. The application uses **deterministic procedural question generators** so a child can practice beyond this fixed bank.
-- Topics: numbers to 10,000; four operations; multiplication facts; multi-digit calculations; problem solving; geometry (angles, triangles, cube nets, perimeter and area); time; tables, bar charts and pictograms; money, length, estimation and gematria.
-- Practice sessions with 10/20/50 questions or unlimited; instant checking, feedback, hints, star awards and local progress.
-- Parent progress overview, progress backup/export/import, text-size toggle, optional Hebrew browser speech.
-- PWA manifest and service worker for installation/offline cache (after the initial online load).
+- **15 units / 78 Hebrew lessons** in a recommended school-year order inspired by the grade 3 books 9–12, plus cross-year topics.
+  Every lesson has a goal, step-by-step explanation, a worked example and two "try it yourself" samples.
+- **Unlimited practice** from deterministic question generators (3 difficulty levels: `קל`, `רגיל`, `אתגר`), with a hint,
+  a second try after a mistake, and a worked solution after every question. A portable snapshot of 14,040 generated
+  questions lives in `content/question-bank.json`.
+- **Visual exercises** drawn in SVG: clocks, angles, triangles with side lengths, area grids, cube nets, number lines,
+  tables, bar charts with a value axis, double bar charts, pictograms, place-value blocks.
+- **Made for children**: on-screen number pad (no system keyboard needed), big touch targets, a mascot that reacts,
+  confetti and sounds (can be muted), stars per lesson, points, levels and 18 medals. Nothing is timed and nothing can be lost.
+- **Daily challenge** (10 mixed questions from lessons already practised) and an interactive **multiplication table**.
+- **Several learners on one device**, each with their own name, avatar and progress.
+- **Parent corner**: totals, 14-day activity chart, strong topics, topics worth revisiting, practice diary, progress per book,
+  settings (sound, large text), backup / restore, and installation help.
+- **PWA**: installable, works offline after the first visit.
 
-## Run with VS Code (Windows/macOS/Linux)
+## Run it
 
-Requirements: Node.js **22+**, npm, current Chrome/Edge/Safari. No database or API keys.
+Requirements: Node.js **22.6+** and npm. No database, no API keys.
 
 ```bash
 npm install
-npm run validate:content
-npm run dev
+npm run dev          # http://localhost:5173
 ```
 
-Open the local URL displayed by Vite (normally **http://localhost:5173**).
+Do **not** open `index.html` as `file://` — it is a Vite project and needs the dev server or a build.
 
-For a production build:
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Development server (also reachable from a tablet on the same Wi-Fi: `http://<computer-ip>:5173`) |
+| `npm run build` | Type-check and build the static site into `dist/` |
+| `npm run preview` | Serve the built `dist/` locally (port 4173) |
+| `npm run validate:content` | Checks all 78 lessons and 23,400 generated questions (answers, options, diagrams, cube nets) |
+| `npm run test` | Unit tests (Vitest): generators, answer checking, math direction, progress, medals, backup format |
+| `npm run test:e2e` | Browser tests (Playwright) at 360×780, 768×1024, 1024×768 and 1440×900. Needs `npm run build` first |
+| `npm run check` | `validate:content` + `test` + `build` — run this before committing |
+| `npm run export:bank` | Regenerates `content/question-bank.json` from the generators |
+
+Browser tests need a browser: either `npx playwright install chromium`, or reuse an installed one:
 
 ```bash
-npm run build
-npm run preview
+PW_CHANNEL=chrome npm run test:e2e      # PowerShell: $env:PW_CHANNEL='chrome'; npm run test:e2e
 ```
 
-Deploy the generated `dist/` folder to a static hosting service using HTTPS. On a tablet, open the URL and use **Add to Home Screen** to install the PWA. For testing from another device on the same Wi-Fi, use your computer's local network IP with port 5173 (ensure the firewall allows it); secure HTTPS hosting is recommended for actual PWA installation.
+## Deploy
 
-**Important:** Do **not** open `index.html` directly as `file://` — this is a Vite/React project requiring a dev server or build.
+`dist/` is a plain static site with relative asset paths, so it works from any folder or sub-path on any static host
+(GitHub Pages, Netlify, Cloudflare Pages, a NAS...). HTTPS is required for installation and offline mode.
 
-## Files
+**GitHub Pages:** the repository contains a manual workflow. Enable *Settings → Pages → Source: GitHub Actions* once,
+then run *Actions → Deploy to GitHub Pages → Run workflow*. Note that a Pages site is public.
+
+On the tablet open the site and choose **Add to Home Screen** / **Install app**. The parent corner in the app has the
+same instructions in Hebrew.
+
+## Project map
 
 | Path | Purpose |
 | --- | --- |
-| `src/main.tsx` | React application and learning flow |
-| `src/styles/app.css` | Tablet/mobile responsive child-friendly UI |
-| `src/data/course.json` | Hebrew lessons, explanations, worked examples, tags |
-| `src/engine/questions.ts` | Procedural question generation, checking, feedback |
-| `src/engine/cubenets.ts` | Mathematically verified cube-net classifier |
-| `src/components/MathVisual.tsx` | SVG geometry, clocks, grids, data charts |
-| `src/engine/progress.ts` | Local progress, scoring, import/export |
-| `content/question-bank.json` | 14,040 pre-generated Q&A pairs and lesson metadata |
-| `docs/CURRICULUM_HE.md` | Full navigable lesson outline, in Hebrew |
-| `docs/CURRICULUM_MATRIX.csv` | Lesson matrix for audit / spreadsheet filtering |
-| `docs/VS_CODE_AGENT_PROMPT.md` | Complete agent handoff & acceptance criteria |
-| `scripts/validate-content.mjs` | Source-level mathematics/content QA (zero dependencies) |
-| `scripts/export-question-bank.mjs` | Rebuild the fixed question bank |
+| `src/App.tsx` | App shell: routing (`#/lesson/<id>` etc.), learners, settings, medal notifications |
+| `src/pages/Learn.tsx` | Home, lesson list, lesson page, practice session, daily challenge, session summary |
+| `src/pages/More.tsx` | Medals, multiplication table, learner profiles, parent corner |
+| `src/components/Practice.tsx` | One practice run: number pad, choices, hint, second try, feedback |
+| `src/components/MathVisual.tsx` | All SVG diagrams |
+| `src/components/MathText.tsx` + `src/engine/mathtext.ts` | Keeps arithmetic left-to-right inside right-to-left Hebrew text |
+| `src/engine/questions.ts` | Question generators and answer checking |
+| `src/engine/cubenets.ts` | Exact cube-net classifier (35 hexominoes → 11 nets) |
+| `src/engine/progress.ts` | Local storage, learners, stars, levels, backup format |
+| `src/engine/achievements.ts` | Medal definitions |
+| `src/engine/sound.ts` | Synthesized sound effects and Hebrew speech |
+| `src/data/course.json` | The 78 lessons (generated by `scripts/build_content.py`) |
+| `public/sw.js` | Offline cache |
+| `docs/CURRICULUM_HE.md`, `docs/CURRICULUM_MATRIX.csv` | Lesson outline for review |
 
-## Key assumptions and limitations
+## Data and privacy
 
-1. Course order is **pedagogical and recommended**, not guaranteed to match a specific school's actual timetable or textbook edition. Parents can select any lesson; do not interpret an unlearned topic as a failed skill.
-2. Some cross-year lessons are **extension/reinforcement**; see lesson tags and curriculum table. Ministry curriculum and textbook contents can evolve, so a teacher should review the order and content before using this as an authoritative syllabus.
-3. A browser can read Hebrew aloud only if the operating system has a suitable Hebrew speech voice. Voice quality is browser-dependent.
-4. Child progress is stored only in this browser's `localStorage`; it is **not automatically synchronized** across tablet and PC. Backup/restore is available.
-5. Parent access is a UI partition, **not a secure authentication barrier**. Do not add child identifiers, analytics or external data collection without an explicit privacy design.
-6. The parent report records attempts/correctness, but does not yet implement formal spaced-repetition, mastery certification, an LMS, or teacher analytics.
-7. An SVG is used for visual exercises; physical drawings should be spot-checked for child readability and mathematical fidelity in browsers.
+- Progress is stored only in this browser's `localStorage` (key `math-kef-store-v2`). Nothing is sent anywhere.
+- It is **not synchronised** between devices. Use *parent corner → backup* to save a JSON file and restore it elsewhere.
+  Backups made by version 1.0 can still be restored.
+- The parent corner is separated by a multiplication question — a child-friendly partition, not a security barrier.
 
-## Validation status
+## Known limitations
 
-On the authoring runtime, this command passed:
-
-```bash
-node --experimental-strip-types scripts/validate-content.mjs
-```
-
-Results: **15 units, 78 lessons, 23,400 generated-question samples** checked across 3 difficulties, including multiple-choice solutions and 35 hexominoes / 11 valid cube nets. This **is not** a proof that every generated word problem is perfect. Run `npm run build`, full browser and tablet checks as specified in `docs/VS_CODE_AGENT_PROMPT.md`.
+1. The lesson order is a recommendation. Schools and teachers differ; any lesson can be opened at any time, and
+   lessons tagged *העשרה* (enrichment) are optional. A teacher should review the content before relying on it as a syllabus.
+2. Automated checks prove that answers, options and diagrams are consistent; they cannot judge pedagogy or Hebrew style.
+   The Hebrew texts have not yet been reviewed by a native-speaking teacher.
+3. Reading aloud needs a Hebrew voice installed on the device; quality depends on the browser.
+4. Tested in Chrome (desktop engine, emulated phone/tablet sizes). Not yet tested on a physical iPad / Android tablet or in Safari.
+5. There is no spaced repetition, mastery certification or teacher dashboard.
